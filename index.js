@@ -1,31 +1,27 @@
 const express = require('express');
+var exphbs  = require('express-handlebars');
+
 const app = express();
+
 const PORT = 8080;
 
-// own basic middleware with access to
-// req, res and the next middleware of 
-// the stack that should be called.
-app.use((req, res, next) => {
-	lout("middleware called");
-	
-	// manipulate req to demonstrate that we can
-	// change the req.
-	req.name = "kaziRabi";
-	
-	// must call next(), otherwise this middleware
-	// will not release the request, ultimately
-	// resulting in no response at all.
-	next();
-});
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+
+app.listen(PORT, () => lout(`Server Started On Port: ${PORT}`));
 
 function lout(obj){
 	console.log(obj);
 }
 
-app.listen(PORT, () => lout(`Server Started On Port: ${PORT}`));
-
+// routes
 app.get('/', (req, res) => {
-	// print the attribute added by our middleware
-	lout(req.name);
-	res.send("hello world!");
+	const heading = "Practice MEN"
+	// passing 'heading' to index.handlebars
+	res.render('index', {heading});
 });
+
+app.get('/about', (req, res) => {
+	res.render('about');
+});
+
