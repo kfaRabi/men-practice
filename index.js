@@ -1,7 +1,17 @@
 const express = require('express');
-var exphbs  = require('express-handlebars');
+const exphbs  = require('express-handlebars');
+const mongoose = require('mongoose');
 
 const app = express();
+
+// get rid ot the 'depricated promise lib' warning
+mongoose.Promise = global.Promise;
+// connect to mongoose
+mongoose.connect('mongodb://localhost/waidea', {
+	useMongoClient: true,
+})
+.then(() => lout("connected to mongoose"))
+.catch((err) => lout(err));
 
 const PORT = 8080;
 
@@ -16,9 +26,8 @@ function lout(obj){
 
 // routes
 app.get('/', (req, res) => {
-	const heading = "Practice MEN"
-	// passing 'heading' to index.handlebars
-	res.render('index', {heading});
+	// const heading = "Practice MEN"
+	res.render('index');
 });
 
 app.get('/about', (req, res) => {
