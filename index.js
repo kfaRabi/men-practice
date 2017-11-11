@@ -34,8 +34,11 @@ app.get('/', (req, res) => {
 	// const heading = "Practice MEN"
 	res.render('index');
 });
-
+// dummy about page
 app.get('/about', (req, res) => {
 	res.render('about');
 });
-
+// add an idea form
+app.get('/ideas/add', (req, res) => {
+	res.render('ideas/add');
+});
