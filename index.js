@@ -4,13 +4,18 @@ const mongoose = require('mongoose');
 
 const app = express();
 
+// load models
+// Idea
+require('./models/Idea');
+const Idea = mongoose.model('ideas');
+
 // get rid ot the 'depricated promise lib' warning
 mongoose.Promise = global.Promise;
 // connect to mongoose
 mongoose.connect('mongodb://localhost/waidea', {
 	useMongoClient: true,
 })
-.then(() => lout("connected to mongoose"))
+.then(() => lout("connected to mongodb"))
 .catch((err) => lout(err));
 
 const PORT = 8080;
