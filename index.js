@@ -72,6 +72,22 @@ app.post('/ideas', (req, res) => {
 		});
 	}
 	else{
-		res.send("done");
+		const {title, details} = req.body;
+		const newUser = {
+			title, details,
+		};
+		new  Idea(newUser).save().then(() => {
+		// mongo will return the stored obj.
+		// uncomment the following lines if
+		// we need them.
+		// new  Idea(newUser).save().then(() => {
+			// lout(idea);
+			res.redirect('/ideas');
+		})
 	}
+});
+
+// list ideas
+app.get('/ideas', (req, res) => {
+	res.send("idea list");
 });
