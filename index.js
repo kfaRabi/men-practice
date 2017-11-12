@@ -87,7 +87,11 @@ app.post('/ideas', (req, res) => {
 	}
 });
 
-// list ideas
+// ideas index page
 app.get('/ideas', (req, res) => {
-	res.send("idea list");
+	Idea.find({/*empty obj -> find all*/})
+	.sort({date: 'desc'})
+	.then(ideas => {
+		res.render('ideas/index', {ideas});
+	});
 });
