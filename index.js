@@ -5,17 +5,13 @@ const bodyParser = require('body-parser'); /* to access req.body.param*/
 const methodOverride = require('method-override'); /*to override post method to put/delete*/
 const session = require('express-session');
 const flash = require('connect-flash');
+const path = require('path');
 
 const app = express();
 const PORT = 8080;
 app.listen(PORT, () => lout(`Server Started On Port: ${PORT}`));
 
 function lout(obj){ console.log(obj); }
-
-// load models
-// Idea
-require('./models/Idea');
-const Idea = mongoose.model('ideas');
 
 // get rid ot the 'depricated promise lib' warning
 mongoose.Promise = global.Promise;
@@ -57,91 +53,21 @@ app.use((req, res, next) => {
 	next();
 }); 
 
+// setup static folder
+app.use(express.static(path.join( __dirname, 'public')));
 
-// routes
+// bind route and model
+const ideas = require('./routes/ideas');
+app.use('/ideas', ideas);
+
+const users = require('./routes/users');
+app.use('/users', users);
+
+// root route
 app.get('/', (req, res) => {
-	// const heading = "Practice MEN"
 	res.render('index');
 });
 // dummy about page
 app.get('/about', (req, res) => {
 	res.render('about');
-});
-// add an idea form
-app.get('/ideas/add', (req, res) => {
-	res.render('ideas/add');
-});
-// handle form submission
-app.post('/ideas', (req, res) => {
-	let errors = [];
-	let title, details;
-	if(!req.body.title){
-		errors.push({ text: "Please Enter A Title"});
-	}
-	else {
-		title = req.body.title;
-	}
-	if(!req.body.details){
-		errors.push({ text: "Please Add Some Details"});
-	}
-	else {
-		details = req.body.details;
-	}
-	if(errors.length > 0) {
-		res.render('ideas/add', {
-			errors, title, details,
-		});
-	}
-	else{
-		const {title, details} = req.body;
-		const newUser = {
-			title, details,
-		};
-		new  Idea(newUser).save().then(() => {
-			req.flash(success_msg, "Your idea is added to the list.");
-			res.redirect('/ideas');
-		})
-	}
-});
-
-// ideas index page
-app.get('/ideas', (req, res) => {
-	Idea.find({/*empty obj -> find all*/}).sort({
-		date: 'desc',
-	}).then(ideas => {
-		res.render('ideas/index', {ideas});
-	});
-});
-
-// get idea edit form
-app.get('/ideas/edit/:_id', (req, res) => {
-	const { _id } = req.params;
-	Idea.findOne({ _id }).then( idea => {
-		res.render('ideas/edit', {idea});
-	});
-});
-
-// update idea
-app.put('/ideas/:_id', (req, res) => {
-	const { _id } = req.params;
-	Idea.findOne({ _id })
-	.then( idea => {
-		const {title, details} = req.body;
-		idea.title = title;
-		idea.details = details;
-		idea.save().then( () => {
-			req.flash(update_msg, "Your Idea Has Been Updated"); 
-			res.redirect('/ideas')
-		});
-	});
-});
-
-// delete idea
-app.delete('/ideas/:_id', (req, res) => {
-	const { _id } = req.params;
-	Idea.deleteOne({ _id }).then( () => {
-		// lout(dbRes);
-		req.flash(delete_msg, "Idea Deleted.");
-		res.redirect('/ideas');
-	});
 });
