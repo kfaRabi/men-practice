@@ -2,6 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 
+// import custom middlewares
+const {loginCheck} = require('../helpers/auth');
+const {isOwner} = require('../helpers/ownership');
 function lout(obj){ console.log(obj); }
 
 // load models
@@ -11,11 +14,11 @@ const Idea = mongoose.model('ideas');
 
 // routes
 // get idea form
-router.get('/add', (req, res) => {
+router.get('/add', loginCheck, (req, res) => {
 	res.render('ideas/add');
 });
 // handle form submission
-router.post('/', (req, res) => {
+router.post('/', loginCheck, (req, res) => {
 	let errors = [];
 	let title, details;
 	if(!req.body.title){
@@ -31,16 +34,17 @@ router.post('/', (req, res) => {
 		details = req.body.details;
 	}
 	if(errors.length > 0) {
-		res.render('/ideas/add', {
+		res.render('ideas/add', {
 			errors, title, details,
 		});
 	}
 	else{
 		const {title, details} = req.body;
-		const newUser = {
-			title, details,
+		const user = req.user.id;
+		const newIdea = {
+			title, details, user,
 		};
-		new  Idea(newUser).save().then(() => {
+		new  Idea(newIdea).save().then(() => {
 			req.flash("success", "Your idea is added to the list.");
 			res.redirect('/ideas');
 		})
@@ -48,8 +52,9 @@ router.post('/', (req, res) => {
 });
 
 // ideas index page
-router.get('/', (req, res) => {
-	Idea.find({/*empty obj -> find all*/}).sort({
+router.get('/', loginCheck, (req, res) => {
+	// Idea.find({/*empty obj -> find all*/}).sort({
+	Idea.find({user: req.user.id}).sort({
 		date: 'desc',
 	}).then(ideas => {
 		res.render('ideas/index', {ideas});
@@ -57,7 +62,7 @@ router.get('/', (req, res) => {
 });
 
 // get idea edit form
-router.get('/edit/:_id', (req, res) => {
+router.get('/edit/:_id', loginCheck, isOwner, (req, res) => {
 	const { _id } = req.params;
 	Idea.findOne({ _id }).then( idea => {
 		res.render('ideas/edit', {idea});
@@ -65,7 +70,7 @@ router.get('/edit/:_id', (req, res) => {
 });
 
 // update idea
-router.put('/:_id', (req, res) => {
+router.put('/:_id', loginCheck, isOwner, (req, res) => {
 	const { _id } = req.params;
 	Idea.findOne({ _id })
 	.then( idea => {
@@ -80,7 +85,7 @@ router.put('/:_id', (req, res) => {
 });
 
 // delete idea
-router.delete('/:_id', (req, res) => {
+router.delete('/:_id', loginCheck, isOwner, (req, res) => {
 	const { _id } = req.params;
 	Idea.deleteOne({ _id }).then( () => {
 		// lout(dbRes);
@@ -90,4 +95,4 @@ router.delete('/:_id', (req, res) => {
 });
 
 
-module.exports = router;
+module.exports = router;	

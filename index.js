@@ -6,6 +6,7 @@ const methodOverride = require('method-override'); /*to override post method to 
 const session = require('express-session');
 const flash = require('connect-flash');
 const path = require('path');
+const passport = require('passport');
 
 const app = express();
 const PORT = 8080;
@@ -40,16 +41,24 @@ app.use(session({
   saveUninitialized: true,
 }))
 
+// passport & passport session middlewares
+// must be lexically placed under
+// express session middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 // middleware to respons with a flash message
 app.use(flash());
 
 
 // global variables (attached with responses)
-const success_msg = "succeess", delete_msg = "deleted", update_msg = "updated";
+const success_msg = "success", delete_msg = "deleted", update_msg = "updated";
 app.use((req, res, next) => {
 	res.locals.success_msg = req.flash(success_msg);
 	res.locals.delete_msg = req.flash(delete_msg);
 	res.locals.update_msg = req.flash(update_msg);
+	res.locals.error = req.flash("error");
+	res.locals.user = req.user || null;
 	next();
 }); 
 
@@ -62,6 +71,9 @@ app.use('/ideas', ideas);
 
 const users = require('./routes/users');
 app.use('/users', users);
+
+// pass passport to local strategy
+require('./config/passport')(passport);
 
 // root route
 app.get('/', (req, res) => {

@@ -1,0 +1,26 @@
+<!-- passport js error -->
+{{#if error}}
+    <div class="row" id="error-message">
+    	<div class="col margin-auto">
+	      <ul class="collection" id="error-message">
+	         <a href="#" class="black-text text-darken-6" id="hide-message">x</a>
+	         <li class="collection-item red white-text center">{{error}}</li>
+	      </ul>
+      </div>
+    </div>
+{{/if}}
+<!-- my custom errors -->
+{{#if errors}}
+    <div class="row">
+    	<div class="col margin-auto">
+	      <ul class="collection" id="error-message">
+	      	<a href="#" class="black-text text-darken-6" id="hide-message">x</a>
+	        {{#each errors}}
+	         <li class="collection-item red white-text center">{{text}}</li>
+	        {{else}}
+	          <!-- show nothing -->
+	        {{/each}}
+	      </ul>
+      </div>
+    </div>
+{{/if}}

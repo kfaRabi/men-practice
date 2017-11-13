@@ -1,3 +1,28 @@
-li{
-	/*margin-bottom: 5px !important;*/
+/*error messages*/
+.margin-auto {
+	width: 70% !important;
+	float: none !important;
+	margin: 0 auto !important;
 }
+
+.collection-item {
+	text-transform: ;
+}
+
+#error-message {
+	position: relative;
+}
+#error-message #hide-message {
+	position: absolute;
+	right: 15px;
+	top: 10px;
+}
+
+/*input fields*/
+input {
+	font-size: x-large !important;
+}
+textarea {
+	font-size: xx-large !important;
+}
+
