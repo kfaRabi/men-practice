@@ -1,0 +1,21 @@
+{{#if success_msg}}	
+      <div class="card green lighten-4">
+        <div class="card-content black-text">
+          <span class="card-title center">{{success_msg}}</span>
+        </div>
+      </div>
+{{/if}}
+{{#if update_msg}}	
+      <div class="card blue lighten-4">
+        <div class="card-content black-text">
+          <span class="card-title center">{{update_msg}}</span>
+        </div>
+      </div>
+{{/if}}
+{{#if delete_msg}}	
+      <div class="card red lighten-4">
+        <div class="card-content black-text">
+          <span class="card-title center">{{delete_msg}}</span>
+        </div>
+      </div>
+{{/if}}

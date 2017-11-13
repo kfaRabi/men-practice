@@ -3,7 +3,14 @@ const exphbs  = require('express-handlebars');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser'); /* to access req.body.param*/
 const methodOverride = require('method-override'); /*to override post method to put/delete*/
+const session = require('express-session');
+const flash = require('connect-flash');
+
 const app = express();
+const PORT = 8080;
+app.listen(PORT, () => lout(`Server Started On Port: ${PORT}`));
+
+function lout(obj){ console.log(obj); }
 
 // load models
 // Idea
@@ -15,11 +22,8 @@ mongoose.Promise = global.Promise;
 // connect to mongoose
 mongoose.connect('mongodb://localhost/waidea', {
 	useMongoClient: true,
-})
-.then(() => lout("connected to mongodb"))
-.catch((err) => lout(err));
+}).then(() => lout("connected to mongodb")).catch((err) => lout(err));
 
-const PORT = 8080;
 
 // middlewares
 // handlebars middleware
@@ -33,12 +37,26 @@ app.use(bodyParser.json());
 // override with POST having ?_method=DELETE
 app.use(methodOverride('_method'));
 
+// express session middleware
+app.use(session({
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true,
+}))
 
-app.listen(PORT, () => lout(`Server Started On Port: ${PORT}`));
+// middleware to respons with a flash message
+app.use(flash());
 
-function lout(obj){
-	console.log(obj);
-}
+
+// global variables (attached with responses)
+const success_msg = "succeess", delete_msg = "deleted", update_msg = "updated";
+app.use((req, res, next) => {
+	res.locals.success_msg = req.flash(success_msg);
+	res.locals.delete_msg = req.flash(delete_msg);
+	res.locals.update_msg = req.flash(update_msg);
+	next();
+}); 
+
 
 // routes
 app.get('/', (req, res) => {
@@ -80,11 +98,7 @@ app.post('/ideas', (req, res) => {
 			title, details,
 		};
 		new  Idea(newUser).save().then(() => {
-		// mongo will return the stored obj.
-		// uncomment the following lines if
-		// we need them.
-		// new  Idea(newUser).save().then(() => {
-			// lout(idea);
+			req.flash(success_msg, "Your idea is added to the list.");
 			res.redirect('/ideas');
 		})
 	}
@@ -115,16 +129,19 @@ app.put('/ideas/:_id', (req, res) => {
 		const {title, details} = req.body;
 		idea.title = title;
 		idea.details = details;
-		idea.save()
-		.then( () => res.redirect('/ideas'));
+		idea.save().then( () => {
+			req.flash(update_msg, "Your Idea Has Been Updated"); 
+			res.redirect('/ideas')
+		});
 	});
 });
 
 // delete idea
 app.delete('/ideas/:_id', (req, res) => {
 	const { _id } = req.params;
-	Idea.deleteOne({ _id }).then( dbRes => {
-		lout(dbRes);
+	Idea.deleteOne({ _id }).then( () => {
+		// lout(dbRes);
+		req.flash(delete_msg, "Idea Deleted.");
 		res.redirect('/ideas');
 	});
 });
