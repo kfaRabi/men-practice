@@ -4,8 +4,18 @@
 			{{#each ideas}}
 				<li class="collection-item">
 					<h4 class="center">{{title}}</h4>
-					<br />
 					<p class="center">{{details}}</p>
+					<div class="row" style="margin-bottom: 0;">
+						<div class="col s2">
+							<a href="/ideas/edit/{{_id}}">edit</a>
+						</div>
+						<div class="col s8"></div>
+						<div class="col s2" style="text-align: right;">
+							<form method="post" action="/ideas/{{_id}}?_method=DELETE" id="my_form">
+								<a onclick="document.getElementById('my_form').submit()" href="#">delete</a>
+							</form>
+						</div>
+					</div>
 				</li>
 			{{else}}
 				<p class="center blue-text">No Ideas Found...</p>

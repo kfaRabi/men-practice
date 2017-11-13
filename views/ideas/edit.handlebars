@@ -1,0 +1,18 @@
+<div class="row">
+  <form class="col m12" action="/ideas/{{idea._id}}?_method=PUT" method="post">
+    <h1 class="center">Edit Your Idea</h1>
+    <div class="row">
+      <div class="input-field col m12">
+        <h4>Title</h4>
+          <input name="title" id="title" type="text" value="{{idea.title}}">
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col m12">
+        <h4>Details</h4>
+        <textarea name="details" type="text">{{idea.details}}</textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Store</button>
+  </form>
+</div>
